@@ -7,15 +7,15 @@ int score = 0;
 
 List<(string a, string b, int score)> test = new()
 {
-    ("A", "X", 4),
-    ("B", "Y", 5) ,
-    ("C", "Z", 6),
-    ("A", "Z", 3),
+    ("A", "X", 3),
     ("B", "X", 1),
-    ("C", "Y", 2),
-    ("A", "Y", 8),
+    ("C", "X", 2),
+    ("A", "Y", 4),
+    ("B", "Y", 5),
+    ("C", "Y", 6),
+    ("A", "Z", 8),
     ("B", "Z", 9),
-    ("C", "X", 7),
+    ("C", "Z", 7),
 };
 
 foreach (var line in input)
@@ -38,6 +38,10 @@ Console.WriteLine(score);
 // A = Rock
 // B = Paper
 // C = Siccors
+
+// x loose
+// y draw
+// z win
 
 //X = Rock 1
 // Y = Paper 2
