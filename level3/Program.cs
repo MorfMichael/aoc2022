@@ -1,16 +1,14 @@
 ﻿string[] input = File.ReadAllLines("level3.in");
 
+List<string[]> groups = input.Chunk(3).ToList();
 
 List<char> shared = new();
 
-foreach (var line in input)
+foreach (var group in groups)
 {
-    int split = line.Length / 2;
-    string left = line[..split];
-    string right = line[split..];
-
-    var s = left.Where(right.Contains).Distinct().ToList();
-    shared.AddRange(s);
+    List<char> chars = group.SelectMany(t => t.ToList()).Distinct().ToList();
+    var contains = chars.Where(t => group.All(x => x.Contains(t))).Distinct().ToList();
+    shared.AddRange(contains);
 }
 
 int count = 0;
