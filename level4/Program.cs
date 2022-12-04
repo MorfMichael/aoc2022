@@ -7,8 +7,8 @@ foreach (var line in input)
     var left = split[0].Split("-").Select(int.Parse).ToArray();
     var right = split[1].Split("-").Select(int.Parse).ToArray();
 
-    if (left[0] >= right[0] && left[1] <= right[1]) count++;
-    else if (right[0] >= left[0] && right[1] <= left[1]) count++;
+    if (left[0] <= right[1] && right[0] <= left[1]) count++;
+    else if (right[0] <= left[1] && left[0] <= right[1]) count++;
 }
 
 Console.WriteLine(count);
