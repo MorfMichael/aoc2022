@@ -11,6 +11,7 @@ foreach (var line in input)
     //if (left[0] >= right[0] && left[1] <= right[1]) count++;
     //else if (right[0] >= left[0] && right[1] <= left[1]) count++;
 
+    //part2
     if (left[0] <= right[1] && right[0] <= left[1]) count++;
     else if (right[0] <= left[1] && left[0] <= right[1]) count++;
 }
