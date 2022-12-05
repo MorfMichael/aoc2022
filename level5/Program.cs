@@ -1,5 +1,8 @@
-﻿string[] lines = File.ReadAllText("level5.in").Split("\r\n\r\n");
+﻿using System.Collections.Generic;
 
+string[] lines = File.ReadAllText("level5.in").Split("\r\n\r\n");
+
+string[] map = lines[0].Split("\r\n");
 string[] instructions = lines[1].Split("\r\n");
 
 string[] m = new[]
@@ -15,6 +18,23 @@ string[] m = new[]
 "JSQCWDM",
 };
 
+// parsing after solved solution added
+//int cnt = (map.Last().Length+1) / 4;
+//string[] m = new string[cnt]; 
+
+//for (int j = 0; j < cnt; j++)
+//{
+//    int idx = 1 + j * 4;
+//    string cur = string.Empty;
+//    for (int i = map.Length - 2; i >= 0; i--)
+//    {
+//        char ch = map[i][idx];
+//        if (ch == ' ') continue;
+//        cur += ch;
+//    }
+
+//    m[j] = cur;
+//}
 
 for (int i = 0; i < instructions.Length; i++)
 {
