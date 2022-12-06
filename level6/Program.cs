@@ -1,17 +1,19 @@
-﻿string[] lines = File.ReadAllLines("level6.in");
+﻿string text = File.ReadAllText("level6.in");
 
 int count = 0;
 
-for (int i = 0; i < lines.Length; i++)
+//int start = 4; // part1
+int start = 14; // part2
+
+for (int i = 0; i < text.Length; i++)
 {
-    string line = lines[i];
-
-    if (string.IsNullOrWhiteSpace(line)) continue;
-
-    /* write your code here */
-
     count++;
+    if (i >= start)
+    {
+        string part = text[(i - start)..i];
+        if (part.Distinct().Count() == part.Length) break;
+    }
 }
 
 
-Console.WriteLine(count);
+Console.WriteLine(count-1);
