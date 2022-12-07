@@ -46,7 +46,13 @@ for (int i = 0; i < lines.Length; i++)
     }
 }
 
-Console.WriteLine(containers.Distinct().Where(t => t.Sum() <= max).Select(t => t.Sum()).Sum());
+int space = 70000000;
+int required = 30000000;
+
+int cur = containers.FirstOrDefault().Sum();
+int limit = cur - (space - required);
+Console.WriteLine(limit);
+Console.WriteLine(containers.OrderBy(t => t.Sum()).FirstOrDefault(x => x.Sum() >= limit).Sum());
 
 class Container
 {
