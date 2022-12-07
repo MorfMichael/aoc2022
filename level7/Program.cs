@@ -3,8 +3,8 @@
 int count = 0;
 int max = 100000;
 
-Container previous = null;
 Container current = null;
+List<Container> containers = new List<Container>();
 for (int i = 0; i < lines.Length; i++)
 {
     string line = lines[i];
@@ -14,53 +14,43 @@ for (int i = 0; i < lines.Length; i++)
     if (line.StartsWith("$ cd"))
     {
         string dir = line.Split(" ")[2];
-        if (dir == "..") current = previous;
-        else current = current?.Containers.FirstOrDefault(x => x.Name == dir) ?? new Container(current, dir);
+        if (dir == "..") current = current.Parent;
+        else
+        {
+            var existing = current?.Containers.FirstOrDefault(x => x.Name == dir);
+            if (existing != null)
+                current = existing;
+            else
+            {
+                current = new Container(current, dir);
+                containers.Add(current);
+            }
+        }
     }
-
-    if (line == "$ ls") continue;
 
     if (line.StartsWith("dir"))
     {
         string dir = line.Split(" ")[1];
-        current.Containers.Add(new Container(current, dir));
+        if (!current.Containers.Any(t => t.Name == dir))
+        {
+            var child = new Container(current, dir);
+            current.Containers.Add(child);
+            containers.Add(child);
+        }
     }
 
     string[] split = line.Split(' ');
     if (int.TryParse(split[0], out var size))
     {
-        var file = new Entry(split[1],size);
-        if (!current.Files.Any(t => t.Name == file.Name)) current.Files.Add(file);
+        current.Files.Add((Name: split[1], Size: size));
     }
-
-    previous = current;
 }
 
-while (current.Parent != null)
-{
-    current = current.Parent;
-}
-
-Console.WriteLine(Calculate(current).Sum());
-
-IEnumerable<int> Calculate(Container container)
-{
-    int sum = 0;
-    foreach (var c in current.Containers.SelectMany(Calculate))
-    {
-        sum += c;
-    }
-
-    if (current.Sum() + sum <= max)
-        yield return current.Sum() + sum;
-}
-
-
-Console.WriteLine(current.Sum());
+Console.WriteLine(containers.Distinct().Where(t => t.Sum() <= max).Select(t => t.Sum()).Sum());
 
 class Container
 {
-    public Container(Container parent, string name, params Entry[] files)
+    public Container(Container parent, string name, params (string Name, int Size)[] files)
     {
         Parent = parent;
         Name = name;
@@ -70,19 +60,10 @@ class Container
 
     public Container Parent { get; set; }
     public string Name { get; set; }
-    public List<Entry> Files { get; set; }
+    public List<(string Name, int Size)> Files { get; set; }
     public List<Container> Containers { get; set; }
 
-    public int Sum() => Files.Sum(x => x.Size);
-}
+    public int Sum() => Files.Sum(x => x.Size) + Containers.Sum(x => x.Sum());
 
-class Entry
-{
-    public Entry(string name, int size)
-    {
-        Name = name;
-        Size = size;
-    }
-    public string Name { get; set; }
-    public int Size { get; set; }
+    public override string ToString() => $"{Name} | Files: {string.Join(",", Files.Select(t => t.Name))} | {string.Join(",", Containers.Select(t => t.Name))}";
 }
