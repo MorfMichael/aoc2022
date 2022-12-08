@@ -1,6 +1,6 @@
 ﻿string[] lines = File.ReadAllLines("level8.in");
 
-int count = 0;
+List < (int row, int column, int score)> scores = new();
 
 for (int i = 0; i < lines.Length; i++)
 {
@@ -11,17 +11,51 @@ for (int i = 0; i < lines.Length; i++)
     {
         int tree = int.Parse(line[j].ToString());
 
-        if (i == 0 || j == 0 || i == lines.Length - 1 || j == line.Length - 1) count++;
+        if (i == 0 || j == 0 || i == lines.Length - 1 || j == line.Length - 1) continue;
         else
         {
-            var left = line[0..j].Select(x => int.Parse(x.ToString())).ToArray();
-            var right = line[(j+1)..].Select(x => int.Parse(x.ToString())).ToArray();
-            var top = lines[0..i].Select(x => int.Parse(x[j].ToString())).ToArray();
-            var bottom = lines[(i+1)..].Select(x => int.Parse(x[j].ToString())).ToArray();
+            int left = 0;
+            int x = j-1;
+            while (x >= 0 && int.Parse(line[x].ToString()) < tree)
+            {
+                left++;
+                x--;
+            }
+            if (x > 0) left++;
+            
+            int right = 0;
+            x = j+1;
+            while (x < line.Length && int.Parse(line[x].ToString()) < tree)
+            {
+                right++;
+                x++;
+            }
+            if (x < line.Length) right++;
 
-            if (left.All(x => x < tree) || right.All(x => x < tree) || top.All(x => x < tree) || bottom.All(x => x < tree)) count++;
+            int top= 0;
+            x = i-1;
+            while (x >= 0 && int.Parse(lines[x][j].ToString()) < tree)
+            {
+                top++;
+                x--;
+            }
+            if (x > 0) top++;
+
+
+            int bottom = 0;
+            x = i+1;
+            while (x < lines.Length && int.Parse(lines[x][j].ToString()) < tree)
+            {
+                bottom++;
+                x++;
+            }
+            if (x < lines.Length) bottom++;
+
+            scores.Add((i,j, left*right*top*bottom));
         }
     }
 }
 
-Console.WriteLine(count);
+
+
+Console.WriteLine(scores.Max(x => x.score));
