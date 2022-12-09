@@ -25,11 +25,11 @@ class Rope
     {
         _start = (0, 0);
         Head = new Knot(0, 0, 0);
-        Tail = new Knot(1, 0, 0);
+        Tails = Enumerable.Range(1, 9).Select(t => new Knot(t, 0, 0)).ToList();
         _tail.Add((0, 0));
     }
 
-    public Knot Tail { get; set; }
+    public List<Knot> Tails { get; set; }
     public Knot Head { get; set; }
 
     public int Result => _tail.Count;
@@ -60,7 +60,12 @@ class Rope
                 break;
         }
 
-        MoveTail(Tail, Head, true);
+        var head = Head;
+        foreach (var tail in Tails)
+        {
+            MoveTail(tail, head, tail.Id == 9);
+            head = tail;
+        }
     }
 
     public void MoveTail(Knot Tail, Knot Head, bool add)
