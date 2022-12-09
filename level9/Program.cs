@@ -25,11 +25,11 @@ class Rope
     {
         _start = (0, 0);
         Head = new Knot(0, 0, 0);
-        Tails = Enumerable.Range(1, 9).Select(t => new Knot(t, 0, 0)).ToList();
+        Tail = new Knot(1, 0, 0);
         _tail.Add((0, 0));
     }
 
-    public List<Knot> Tails { get; set; }
+    public Knot Tail { get; set; }
     public Knot Head { get; set; }
 
     public int Result => _tail.Count;
@@ -60,15 +60,10 @@ class Rope
                 break;
         }
 
-        var head = Head;
-        foreach (var tail in Tails.OrderBy(t => t.Id))
-        {
-            MoveTail(tail, head);
-            head = tail;
-        }
+        MoveTail(Tail, Head, true);
     }
 
-    public void MoveTail(Knot Tail, Knot Head)
+    public void MoveTail(Knot Tail, Knot Head, bool add)
     {
         if (Head.X >= Tail.X - 1 && Head.X <= Tail.X + 1 && Head.Y >= Tail.Y - 1 && Head.Y <= Tail.Y + 1) return;
 
@@ -122,7 +117,7 @@ class Rope
             Tail.Y--;
         }
 
-        if (Tail.Id == 9 && !_tail.Contains((Tail.X, Tail.Y)))
+        if (add && !_tail.Contains((Tail.X, Tail.Y)))
             _tail.Add((Tail.X, Tail.Y));
     }
 }
