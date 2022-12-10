@@ -4,7 +4,10 @@ int x = 1;
 int cycle = 1;
 Dictionary<int, int> signal = new();
 int[] checks = new[] { 20, 60, 100, 140, 180, 220 };
+int[] sprite = new[] { 0, 1, 2 };
+List<string> crt = new();
 
+string row = "";
 for (int i = 0; i < lines.Length; i++)
 {
     string line = lines[i];
@@ -17,31 +20,28 @@ for (int i = 0; i < lines.Length; i++)
     if (instruction == "noop")
     {
         cycle++;
-        CycleCheck();
+        Draw();
     }
     else
     {
         int value = int.Parse(split[1]);
         cycle++;
-        CycleCheck();
+        Draw();
         cycle++;
         x += value;
-        CycleCheck();
+        sprite = new[] { x - 1, x, x + 1 };
+        Draw();
     }
 }
 
-Console.WriteLine(signal.Sum(x => x.Value));
+Console.WriteLine(string.Join(Environment.NewLine,crt));
 
-
-
-void CycleCheck()
+void Draw()
 {
-
-    if (checks.Contains(cycle))
+    row += sprite.Contains((cycle-1)%40) ? "#" : ".";
+    if (row.Length == 40)
     {
-        int s = cycle * x;
-        Console.WriteLine($"{cycle}: {s}");
-        Console.ReadKey();
-        signal.Add(cycle, s);
+        crt.Add(row);
+        row = "";
     }
 }
