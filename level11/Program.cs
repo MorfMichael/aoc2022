@@ -9,24 +9,31 @@
     If false: throw to monkey 1
  */
 
-for (int i = 0; i < 20; i++)
+ulong lcm = 1;
+foreach (var m in monkeys)
+{
+    lcm *= m.Divisible;
+}
+
+for (int i = 1; i <= 10000; i++)
 {
     foreach (var monkey in monkeys)
     {
-        monkey.Turn(monkeys);
+        monkey.Turn(monkeys, lcm);
     }
 
-    foreach (var monkey in monkeys)
+    if (i == 1 || i == 20 || i % 1000 == 0)
     {
-        monkey.Print();
+        Console.WriteLine("Round " + i);
+        foreach (var monkey in monkeys)
+        {
+            monkey.Print();
+        }
     }
-    Console.ReadKey();
 }
 
 var most = monkeys.OrderByDescending(x => x.Times).Take(2).ToList();
 Console.WriteLine(most[0].Times * most[1].Times);
-
-
 
 class Monkey
 {
@@ -34,12 +41,12 @@ class Monkey
     {
         string id = lines[0].Replace("Monkey ", "").Replace(":", "");
         Id = int.Parse(id);
-        lines[1].Replace("Starting items: ", "").Trim().Split(", ").Select(int.Parse).ToList().ForEach(Items.Enqueue);
+        lines[1].Replace("Starting items: ", "").Trim().Split(", ").Select(ulong.Parse).ToList().ForEach(Items.Enqueue);
         var operationSplit = lines[2].Split();
         Operation = operationSplit[^2];
-        OperationValue = int.TryParse(operationSplit[^1], out var opvalue) ? opvalue : null;
+        OperationValue = ulong.TryParse(operationSplit[^1], out var opvalue) ? opvalue : null;
         string divisible = lines[3].Split()[^1];
-        Divisible = int.Parse(divisible);
+        Divisible = ulong.Parse(divisible);
 
         string tmid = lines[4].Split()[^1];
         string fmid = lines[5].Split()[^1];
@@ -48,22 +55,22 @@ class Monkey
     }
 
     public int Id { get; set; }
-    public Queue<int> Items { get; set; } = new();
+    public Queue<ulong> Items { get; set; } = new();
     public string Operation { get; set; }
-    public int? OperationValue { get; set; }
-    public int Divisible { get; set; }
-    public int Times { get; set; }
+    public ulong? OperationValue { get; set; }
+    public ulong Divisible { get; set; }
+    public ulong Times { get; set; }
 
     public int TrueMonkeyId { get; set; }
     public int FalseMonkeyId { get; set; }
 
-    public void Turn(List<Monkey> monkeys)
+    public void Turn(List<Monkey> monkeys, ulong lcm)
     {
         while (Items.Any())
         {
             Times++;
-            int value = Items.Dequeue();
-            int _new = Operation switch
+            ulong value = Items.Dequeue();
+            ulong _new = Operation switch
             {
                 "/" => value / (OperationValue ?? value),
                 "*" => value * (OperationValue ?? value),
@@ -72,7 +79,7 @@ class Monkey
                 _ => value,
             };
 
-            _new = (int)Math.Floor(_new / 3d);
+            _new %= lcm;
 
             if (_new % Divisible == 0)
             {
@@ -87,6 +94,8 @@ class Monkey
 
     public void Print()
     {
-        Console.WriteLine($"Monkey {Id}: " + string.Join(", ", Items));
+        Console.WriteLine($"Monkey {Id}: {Times}");
     }
+
+    
 }
