@@ -19,8 +19,10 @@ for (int i = 0; i < lines.Length; i++)
 var start = points.FirstOrDefault(x => x.start);
 var end = points.FirstOrDefault(x => x.end);
 
-List<(int x, int y, int height, int count)> steps = new() { (start.x, start.y, start.height, 0) };
+List<(int x, int y, int height, int count)> steps = new();
 HashSet<(int x, int y)> visited = new() { };
+
+points.Where(t => t.height == 1).ToList().ForEach(s => steps.Add((s.x, s.y, s.height, 0)));
 
 var cur = steps.FirstOrDefault();
 
