@@ -1,68 +1,14 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using System.Text.RegularExpressions;
 
-List<(List<object> left, List<object> right, int Index)> packets = File.ReadAllText("level13.in").Split("\r\n\r\n").Select((t, i) => (Split: t.Split("\r\n"), Index: i + 1)).Select(t => (left: Parse(t.Split[0]), right: Parse(t.Split[1]), Index: t.Index)).ToList();
+List<(List<object> Packet, int Index, bool Divider)> packets = File.ReadAllText("level13.in").Split("\r\n", StringSplitOptions.RemoveEmptyEntries).Select((t, i) => (Packet: Parse(t), Index: i + 1, Divider: false)).ToList();
 
-int count = 0;
-foreach (var packet in packets)
-{
-    bool? compare = Compare(packet.left, packet.right);
-    if (compare.HasValue && compare.Value) count += packet.Index;
+packets.Add((Parse("[[2]]"), packets.Count, true));
+packets.Add((Parse("[[6]]"), packets.Count, true));
 
-    Console.ForegroundColor = compare ?? false ? ConsoleColor.Green : ConsoleColor.Red;
-    Console.WriteLine(packet.Index);
-
-    Console.ResetColor();
-    Console.WriteLine(Print(packet.left));
-    Console.WriteLine(Print(packet.right));
-    //Console.ReadKey();
-}
-Console.WriteLine(count);
-
-bool? Compare(List<object> left, List<object> right)
-{
-    for (int i = 0; i < left.Count; i++)
-    {
-        if (i >= right.Count) return false;
-
-        int? l = left[i] as int?;
-        int? r = right[i] as int?;
-        List<object> ll = left[i] as List<object>;
-        List<object> rr = right[i] as List<object>;
-
-        if (l.HasValue && r.HasValue)
-        {
-            Console.WriteLine("compare " + l + " vs " + r);
-            if (l.Value > r.Value) return false;
-            if (l.Value < r.Value) return true;
-        }
-
-        if (ll != null && rr != null)
-        {
-            Console.WriteLine("compare " + Print(ll) + " vs " + Print(rr));
-            var a = Compare(ll, rr);
-            if (a.HasValue) return a.Value;
-        }
-
-        if (ll != null && r.HasValue)
-        {
-            Console.WriteLine("compare " + Print(ll) + " vs " + r);
-            var b = Compare(ll, new() { r.Value });
-            if (b.HasValue) return b.Value;
-        }
-
-        if (l.HasValue && rr != null)
-        {
-            Console.WriteLine("compare " + l + " vs " + Print(rr));
-            var c = Compare(new() { l }, rr);
-            if (c.HasValue) return c.Value;
-        }
-    }
-
-    if (left.Count < right.Count) return true;
-
-    return null;
-}
+var divider = packets.OrderBy(t => t.Packet, new PacketComparer()).Select((t, i) => (Packet: t, Index: i + 1)).Where(t => t.Packet.Divider).ToList();
+Console.WriteLine(divider[0].Index * divider[1].Index);
 
 string Print(List<object> list)
 {
@@ -119,4 +65,53 @@ List<object> Parse(string input)
     }
 
     return current;
+}
+
+class PacketComparer : IComparer<List<object>>
+{
+    public int Compare(List<object> x, List<object> y) => LocalCompare(x, y);
+    int LocalCompare(List<object> left, List<object> right)
+    {
+        for (int i = 0; i < left.Count; i++)
+        {
+            if (i >= right.Count) return 1;
+
+            int? l = left[i] as int?;
+            int? r = right[i] as int?;
+            List<object> ll = left[i] as List<object>;
+            List<object> rr = right[i] as List<object>;
+
+            if (l.HasValue && r.HasValue)
+            {
+                //Console.WriteLine("compare " + l + " vs " + r);
+                if (l.Value > r.Value) return 1;
+                if (l.Value < r.Value) return -1;
+            }
+
+            if (ll != null && rr != null)
+            {
+                //Console.WriteLine("compare " + Print(ll) + " vs " + Print(rr));
+                var a = Compare(ll, rr);
+                if (a != 0) return a;
+            }
+
+            if (ll != null && r.HasValue)
+            {
+                //Console.WriteLine("compare " + Print(ll) + " vs " + r);
+                var b = Compare(ll, new() { r.Value });
+                if (b != 0) return b;
+            }
+
+            if (l.HasValue && rr != null)
+            {
+                //Console.WriteLine("compare " + l + " vs " + Print(rr));
+                var c = Compare(new() { l }, rr);
+                if (c != 0) return c;
+            }
+        }
+
+        if (left.Count < right.Count) return -1;
+
+        return 0;
+    }
 }
