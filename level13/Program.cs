@@ -7,12 +7,10 @@ Console.WriteLine(packets.Count);
 
 
 string value = "[1,[2,[3,[4,[5,6,0]]]],8,9]";
-var split = value.Split(',');
-
 
 Stack<List<object>> start = new();
 List<object> current = null;
-foreach (var s in split)
+foreach (var s in value.Split(','))
 {
     string edit = s;
     while (edit.StartsWith("["))
