@@ -1,6 +1,6 @@
 ﻿string[] lines = File.ReadAllLines("level14.in");
 
-List<(int x, int y)> blocked = new();
+HashSet<(int x, int y)> blocked = new();
 
 foreach (var line in lines)
 {
@@ -23,15 +23,16 @@ foreach (var line in lines)
 
 int count = 0;
 int max = blocked.Max(b => b.y);
+int floor = max + 2;
+
 (int x, int y) cur = (500, 0);
 
 while (true)
 {
-    if (cur.y > max) break;
-
-    var newcur = Move(cur.x, cur.y);
-    if (newcur == null) // rest
+    var newcur = Move(cur);
+    if (newcur == null || newcur.HasValue && newcur.Value.y == floor) // rest
     {
+        if (cur.x == 500 && cur.y == 0) { count++; break; }
         blocked.Add(cur);
         cur = (500, 0);
         count++;
@@ -54,13 +55,13 @@ Console.WriteLine(count);
 //    Console.WriteLine();
 //}
 
-(int x, int y)? Move(int x, int y)
+(int x, int y)? Move((int x, int y) value)
 {
-    if (!blocked.Any(t => t.x == x && t.y == y + 1)) return (x,y+1);
+    if (!blocked.Contains((value.x, value.y+1))) return (value.x,value.y+1);
 
-    if (!blocked.Any(t => t.x == x - 1 && t.y == y + 1)) return (x - 1, y + 1);
+    if (!blocked.Contains((value.x-1, value.y+1))) return (value.x - 1, value.y + 1);
 
-    if (!blocked.Any(t => t.x == x + 1 && t.y == y + 1)) return (x + 1, y + 1);
+    if (!blocked.Contains((value.x+1, value.y+1))) return (value.x + 1, value.y + 1);
 
     return null;
 }
