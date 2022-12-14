@@ -29,10 +29,8 @@ int floor = max + 2;
 
 while (true)
 {
-    if (cur.y > max) break;
-
     var newcur = Move(cur);
-    if (newcur == null) // rest
+    if (newcur == null || newcur.HasValue && newcur.Value.y == floor) // rest
     {
         if (cur.x == 500 && cur.y == 0) { count++; break; }
         blocked.Add(cur);
@@ -46,16 +44,6 @@ while (true)
 }
 
 Console.WriteLine(count);
-
-//for (int y = 10; y < 150; y++)
-//{
-//    for (int x = 480; x < 580; x++)
-//    {
-//        var b = blocked.FirstOrDefault(m => m.x == x && m.y == y);
-//        Console.Write(b != default ? '#' : '.');
-//    }
-//    Console.WriteLine();
-//}
 
 (int x, int y)? Move((int x, int y) value)
 {
