@@ -29,8 +29,10 @@ int floor = max + 2;
 
 while (true)
 {
+    if (cur.y > max) break;
+
     var newcur = Move(cur);
-    if (newcur == null || newcur.HasValue && newcur.Value.y == floor) // rest
+    if (newcur == null) // rest
     {
         if (cur.x == 500 && cur.y == 0) { count++; break; }
         blocked.Add(cur);
