@@ -20,26 +20,15 @@ foreach (var line in lines)
     beacons.Add((bx, by));
 
     var s = (sx, sy, bx, by, d);
-    //Console.WriteLine(s);
     scanners.Add(s);
-    //AddRange(sx, sy, bx, by);
 }
 
-/*
-3,3
-4,4
-.......
-...#...
-..###..
-.##S##.
-..##B..
-...#...
-.......
-*/
-long bla = Range(2000000).ToList().Sum(x => x.x2 > x.x1 ? x.x2 - x.x1 : x.x1 - x.x2);
-Console.WriteLine(bla);
+var bla = GetRanges(2000000).OrderBy(t => t.a).ThenBy(x => x.b).ToList();
+var merged = MergeRanges(bla);
+long res = merged.Sum(x => x.b > x.a ? x.b - x.a : x.a - x.b);
+Console.WriteLine(res);
 
-IEnumerable<(long x1, long x2)> Range(long y)
+IEnumerable<(long a, long b)> GetRanges(long y)
 {
     foreach (var scanner in scanners)
     {
@@ -49,6 +38,28 @@ IEnumerable<(long x1, long x2)> Range(long y)
         Console.WriteLine(scanner + "; " + r + " -> " + (r.x2 > r.x1 ? r.x2 - r.x1 : r.x1 - r.x2));
         yield return r;
     }
+}
+
+IEnumerable<(long a, long b)> MergeRanges(List<(long a, long b)> ranges)
+{
+    HashSet<(long a, long b)> result = new();
+
+    var queue = new Queue<(long a, long b)>(ranges);
+    var cur = queue.Dequeue();
+    while (queue.Any())
+    {
+        var next = queue.Dequeue();
+
+        if (cur.a <= next.a && cur.b >= next.b) continue;
+        else if (cur.a <= next.b && cur.b >= next.a) cur.b = next.b;
+        else
+        {
+            yield return cur;
+            cur = next;
+        }
+    }
+
+    yield return cur;
 }
 
 void AddRange(long sx, long sy, long bx, long by)
