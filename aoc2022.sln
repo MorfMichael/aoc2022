@@ -29,7 +29,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "level12", "level12\level12.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "level13", "level13\level13.csproj", "{260B8993-877A-41BE-A4D5-86E4A681CE9F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "level14", "level14\level14.csproj", "{4F7380FA-33F4-4380-86BD-434C0C0028A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "level14", "level14\level14.csproj", "{4F7380FA-33F4-4380-86BD-434C0C0028A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "level15", "level15\level15.csproj", "{1A2DB894-79DB-402D-AE85-94F83E543570}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +95,10 @@ Global
 		{4F7380FA-33F4-4380-86BD-434C0C0028A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F7380FA-33F4-4380-86BD-434C0C0028A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F7380FA-33F4-4380-86BD-434C0C0028A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A2DB894-79DB-402D-AE85-94F83E543570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A2DB894-79DB-402D-AE85-94F83E543570}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A2DB894-79DB-402D-AE85-94F83E543570}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A2DB894-79DB-402D-AE85-94F83E543570}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
