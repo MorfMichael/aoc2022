@@ -8,8 +8,6 @@ List<(long sx, long sy, long bx, long by, long d)> scanners = new();
 HashSet<(long x, long y)> beacons = new();
 HashSet<(long x, long y)> not = new();
 
-long check = 2000000;
-
 foreach (var line in lines)
 {
     var split = line.Split();
@@ -17,7 +15,7 @@ foreach (var line in lines)
     long sy = long.Parse(split[3][2..][..^1]);
     long bx = long.Parse(split[^2][2..][..^1]);
     long by = long.Parse(split[^1][2..]);
-    long d = ManhattanDistance(sx, sy, bx, by);
+    long d = Math.Abs(sx - bx) + Math.Abs(sy - by);
     beacons.Add((bx, by));
 
     var s = (sx, sy, bx, by, d);
@@ -66,10 +64,3 @@ IEnumerable<(long a, long b)> MergeRanges(IEnumerable<(long a, long b)> ranges)
 
     yield return cur;
 }
-
-void AddRange(long sx, long sy, long bx, long by)
-{
-    long value = ManhattanDistance(sx, sy, bx, by);
-}
-
-static long ManhattanDistance(long x1, long y1, long x2, long y2) => Math.Abs(x1 - x2) + Math.Abs(y1 - y2);
