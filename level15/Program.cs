@@ -1,4 +1,5 @@
-﻿using System.Reflection.Metadata.Ecma335;
+﻿using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography.X509Certificates;
 
 string[] lines = File.ReadAllLines("level15.in");
@@ -23,10 +24,17 @@ foreach (var line in lines)
     scanners.Add(s);
 }
 
-var bla = GetRanges(2000000).OrderBy(t => t.a).ThenBy(x => x.b).ToList();
-var merged = MergeRanges(bla);
-long res = merged.Sum(x => x.b > x.a ? x.b - x.a : x.a - x.b);
-Console.WriteLine(res);
+long result = 0;
+for (int y = 1; y <= 4_000_000; y++)
+{
+    var ranges = MergeRanges(GetRanges(y)).ToList();
+    if (ranges.Sum(x => x.b > x.a ? x.b - x.a : x.a - x.b) < 4_000_000)
+    {
+        result = (ranges[0].b + 1) * 4_000_000 + y;
+        Console.WriteLine(result);
+        break;
+    }
+}
 
 IEnumerable<(long a, long b)> GetRanges(long y)
 {
@@ -34,17 +42,14 @@ IEnumerable<(long a, long b)> GetRanges(long y)
     {
         if (y > scanner.sy + scanner.d || y < scanner.sy - scanner.d) continue;
         long myy = Math.Abs(scanner.sy - y);
-        var r = (x1: scanner.sx - (scanner.d - myy), x2: scanner.sx + (scanner.d - myy));
-        Console.WriteLine(scanner + "; " + r + " -> " + (r.x2 > r.x1 ? r.x2 - r.x1 : r.x1 - r.x2));
+        var r = (x1: scanner.sx - Math.Min((scanner.d - myy), scanner.sx), x2: Math.Min(scanner.sx + (scanner.d - myy), 4_000_000));
         yield return r;
     }
 }
 
-IEnumerable<(long a, long b)> MergeRanges(List<(long a, long b)> ranges)
+IEnumerable<(long a, long b)> MergeRanges(IEnumerable<(long a, long b)> ranges)
 {
-    HashSet<(long a, long b)> result = new();
-
-    var queue = new Queue<(long a, long b)>(ranges);
+    var queue = new Queue<(long a, long b)>(ranges.OrderBy(t => t.a).ThenBy(t => t.b));
     var cur = queue.Dequeue();
     while (queue.Any())
     {
