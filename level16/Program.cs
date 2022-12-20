@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
-
-string[] lines = File.ReadAllLines("level16.ex");
+﻿string[] lines = File.ReadAllLines("level16.ex");
 
 Dictionary<string, int> valves = new();
 Dictionary<string, string[]> next = new();
@@ -21,50 +18,31 @@ for (int i = 0; i < lines.Length; i++)
     next.Add(valve, n);
 }
 
-int minute = 0;
-int sum = 0;
-Queue<(string[] valve, int cost)> queue = new();
-HashSet<string> open = new();
+Dictionary<(string, HashSet<string>), int> calc = new();
 
-string cur = "AA";
-bool move = true;
-
-while (++minute <= 30)
+int Flow(string cur, HashSet<string> open, int left)
 {
-    Console.WriteLine("== Minute " + minute + " ==");
-    int releasing = open.Sum(x => valves[x]);
-    sum += releasing;
-    Console.WriteLine(open.Any() ? string.Join(",", open) + " releasing " + releasing : "No vavles open!");
+    if (left <= 0) return 0;
 
-    if (move || next[cur].Any(t => valves[t] > valves[cur]))
+    if (calc.ContainsKey((cur,open))) return calc[(cur, open)];
+
+    int max = 0;
+
+    if (!open.Contains(cur))
     {
-        var permutation = Permutation(new(), cur).OrderByDescending(t => t.Sum(x => x.pressure)).ToList()[0];
-        cur = permutation[0].valve;
-        Console.WriteLine("move to " + cur);
-        move = false;
-    }
-    else
-    {
-        if (valves[cur] > 0)
+        var nopen = open.Append(cur).ToHashSet();
+        int flow = valves[cur] * (left - 1);
+
+        foreach (var n in next[cur])
         {
-            open.Add(cur);
-            Console.WriteLine(cur + " opened!");
+            if (flow > 0)
+                max = Math.Max(max, flow + Flow(n, nopen, left - 2));
+            max = Math.Max(max, Flow(n, open, left - 1));
         }
-        move = true;
     }
+
+    if (!calc.ContainsKey((cur,open))) calc.Add((cur,open), max);
+    return max;
 }
 
-IEnumerable<List<(string valve, int pressure)>> Permutation(List<(string valve, int pressure)> previous, string cur)
-{
-    foreach (var n in next[cur])
-    {
-        if (open.Contains(n)) continue;
-
-        previous.Add((n, valves[n]));
-
-        yield return previous.ToList();
-
-        foreach (var child in Permutation(previous.ToList(), n))
-            yield return child;
-    }
-}
+Console.WriteLine(Flow("AA", new(), 30));
