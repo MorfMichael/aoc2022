@@ -9,14 +9,18 @@
 
   <ItemGroup>
     <None Remove="level20.in" />
-    <None Remove="sample.txt" />
+    <None Remove="sample.in" />
+    <None Remove="sample2.in" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="level20.in">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="sample.txt">
+    <Content Include="sample.in">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sample2.in">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
