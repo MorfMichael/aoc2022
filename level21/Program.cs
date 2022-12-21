@@ -5,7 +5,7 @@ string[] lines = File.ReadAllLines("level21.in");
 int count = 0;
 long humn = 0;
 
-List<(string var, string a, string op, string b)> operations = new();
+Dictionary<string, (string a, string op, string b)> operations = new();
 Dictionary<string, long> register = new();
 
 for (int i = 0; i < lines.Length; i++)
@@ -27,18 +27,50 @@ for (int i = 0; i < lines.Length; i++)
         string op = split[2];
         string b = split[3];
 
-        operations.Add((name, a, op, b));
+        operations.Add(name, (a, op, b));
     }
 }
 
-Console.WriteLine(GetValue("root"));
+
+var root = operations["root"];
+
+var parents = GetParents("humn").ToList();
+
+for (long ii = 3_712_643_500_000; ii < 4_000_000_000_000; ii++)
+{
+    //long ii = 370_000_0_000_000;
+    register["humn"] = ii;
+
+    long aa = GetValue(root.a);
+    long bb = GetValue(root.b);
+
+    Console.WriteLine($"{aa} == {bb}");
+    if (GetValue(root.a) == GetValue(root.b))
+    {
+        Console.WriteLine(ii);
+        return;
+    }
+}
+
+IEnumerable<string> GetParents(string variable)
+{
+    yield return variable;
+
+    var found = operations.Where(x => x.Value.a == variable || x.Value.b == variable).SelectMany(t => GetParents(t.Key)).ToList();
+    foreach (var f in found)
+    {
+        yield return f;
+    }
+}
+
 
 long GetValue(string variable)
 {
     if (register.ContainsKey(variable)) return register[variable];
     else
     {
-        var op = operations.FirstOrDefault(t => t.var == variable);
+        var op = operations[variable];
+
         var a = GetValue(op.a);
         var b = GetValue(op.b);
 
@@ -51,8 +83,12 @@ long GetValue(string variable)
             _ => 0
         };
 
-        operations.Remove(op);
-        register.Add(variable, result);
+        if (!parents.Contains(variable))
+        {
+            operations.Remove(variable);
+            register.Add(variable, result);
+        }
+
         return result;
     }
 }
