@@ -1,6 +1,9 @@
-﻿string[] lines = File.ReadAllLines("level21.in");
+﻿using System.Runtime.CompilerServices;
+
+string[] lines = File.ReadAllLines("level21.in");
 
 int count = 0;
+long humn = 0;
 
 List<(string var, string a, string op, string b)> operations = new();
 Dictionary<string, long> register = new();
@@ -28,19 +31,7 @@ for (int i = 0; i < lines.Length; i++)
     }
 }
 
-while (operations.Any())
-{
-    var op = operations.First();
-    long res = GetValue(op.var);
-
-    if (op.var == "root")
-    {
-        Console.WriteLine(res);
-        return;
-    }
-}
-
-
+Console.WriteLine(GetValue("root"));
 
 long GetValue(string variable)
 {
