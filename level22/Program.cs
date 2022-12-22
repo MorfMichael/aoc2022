@@ -38,6 +38,14 @@ var start = map.OrderBy(t => t.y).ThenBy(t => t.x).Where(t => t.ch == '.').First
 Console.WriteLine(start);
 var cur = (start.x, start.y);
 
+/*
+wrong
+172120
+73233
+152057
+165175
+ * */
+
 foreach (var inst in instructions)
 {
     if (int.TryParse(inst, out var count))
@@ -49,6 +57,7 @@ foreach (var inst in instructions)
 
             if (next == default || next.ch == ' ')
             {
+                Console.WriteLine(inst);
                 var pos = GetNewPosition(cur.x, cur.y, direction);
                 Console.WriteLine($"{(cur, direction)} -> {pos}");
                 next = map.FirstOrDefault(p => p.x == pos.x && p.y == pos.y);
@@ -61,12 +70,12 @@ foreach (var inst in instructions)
             }
             else if (next.ch == '#')
             {
-                Console.WriteLine("WALL");
+                //Console.WriteLine("WALL");
                 break;
             }
             else if (next.ch == '.')
             {
-                Console.WriteLine((move,direction));
+                //Console.WriteLine((move,direction));
                 cur = move;
             }
         }
@@ -108,18 +117,18 @@ Console.WriteLine($"1000 * {cur.y} + 4 * {cur.x} + {direction} = {1000 * cur.y +
     {
         return block.Key switch
         {
-            2 => (x: 100, y: 101 + (50-y), 2),
-            3 => (x: 51 + (y-51), 50, 3),
-            5 => (x: 150, y: 50 - (y-101), 2),
-            6 => (x: 51 + 151-y, y: 150, 3)
+            2 => (x: 100, y: 151-y, 2),
+            3 => (x: y, 50, 3),
+            5 => (x: 150, y: 151-y, 2),
+            6 => (x: y-100, y: 150, 3)
         };
     }
     else if (direction == 1) // down
     {
         return block.Key switch
         {
-            2 => (x: 100, y: 51 + (x-51), 2),
-            5 => (x: 50, y: 151 + (51 - x), 2),
+            2 => (x: 100, y: x, 2),
+            5 => (x: 50, y: x+100, 2),
             6 => (x: 51 + x, y: 1, 1)
         };
     }
@@ -127,17 +136,17 @@ Console.WriteLine($"1000 * {cur.y} + 4 * {cur.x} + {direction} = {1000 * cur.y +
     {
         return block.Key switch
         {
-            1 => (x: 1, y: 101+(50-y), 0),
+            1 => (x: 1, y: 151-y, 0),
             3 => (x: y-50, y: 101, 1),
-            4 => (x: 51,y: x,0),
-            6 => (x: 51+(y-151), y: 1, 1)
+            4 => (x: 51, y: 151-y,0),
+            6 => (x: y-100, y: 1, 1)
         };
     }
     else if (direction == 3) // up
     {
         return block.Key switch
         {
-            1 => (x: 1, y: 151+(x-51), 0),
+            1 => (x: 1, y: x+100, 0),
             2 => (x: x-100, y: 200, 3),
             4 => (x: 51, y: x+50, 0)
         };
