@@ -22,9 +22,10 @@ Dictionary<(string, HashSet<string>), int> calc = new();
 
 int Flow(string cur, HashSet<string> open, int left)
 {
+    //Console.WriteLine($"{cur} | {left} | {string.Join(",", open)}");
     if (left <= 0) return 0;
 
-    if (calc.ContainsKey((cur,open))) return calc[(cur, open)];
+    //if (calc.ContainsKey((cur,open))) return calc[(cur, open)];
 
     int max = 0;
 
@@ -37,11 +38,13 @@ int Flow(string cur, HashSet<string> open, int left)
         {
             if (flow > 0)
                 max = Math.Max(max, flow + Flow(n, nopen, left - 2));
-            max = Math.Max(max, Flow(n, open, left - 1));
+            else
+                max = Math.Max(max, Flow(n, open, left - 1));
         }
     }
 
-    if (!calc.ContainsKey((cur,open))) calc.Add((cur,open), max);
+
+    //if (!calc.ContainsKey((cur,open))) calc.Add((cur,open), max);
     return max;
 }
 
