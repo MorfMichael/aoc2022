@@ -22,6 +22,8 @@ for (int y = 1; y <= part1.Length; y++)
 
 string[] instructions = split[1].Replace("R", ";R;").Replace("L", ";L;").Split(";");
 
+HashSet<string> bla = new HashSet<string>();
+
 
 Dictionary<int, (int x1, int y1, int x2, int y2)> blocks = new()
 {
@@ -44,6 +46,7 @@ wrong
 73233
 152057
 165175
+132088
  * */
 
 foreach (var inst in instructions)
@@ -57,9 +60,9 @@ foreach (var inst in instructions)
 
             if (next == default || next.ch == ' ')
             {
-                Console.WriteLine(inst);
+                //Console.WriteLine(inst);
                 var pos = GetNewPosition(cur.x, cur.y, direction);
-                Console.WriteLine($"{(cur, direction)} -> {pos}");
+                bla.Add($"{(Block(cur.x,cur.y), Direction(direction))} -> {(Block(pos.x, pos.y), Direction(pos.direction))}");
                 next = map.FirstOrDefault(p => p.x == pos.x && p.y == pos.y);
                 if (next.ch == '#') break;
                 if (next.ch == '.')
@@ -82,7 +85,7 @@ foreach (var inst in instructions)
     }
     else
     {
-        Console.WriteLine("TURN " + inst);
+        //Console.WriteLine("TURN " + inst);
         var turn = inst switch
         {
             "R" => direction + 1,
@@ -95,6 +98,8 @@ foreach (var inst in instructions)
         else direction = turn;
     }
 }
+
+Console.WriteLine(string.Join(Environment.NewLine, bla));
 
 Console.WriteLine($"1000 * {cur.y} + 4 * {cur.x} + {direction} = {1000 * cur.y + 4 * cur.x + direction}");
 
@@ -109,6 +114,16 @@ Console.WriteLine($"1000 * {cur.y} + 4 * {cur.x} + {direction} = {1000 * cur.y +
     };
 }
 
+int Block(int x, int y) => blocks.FirstOrDefault(b => x >= b.Value.x1 && x <= b.Value.x2 && y >= b.Value.y1 && y <= b.Value.y2).Key;
+
+string Direction(int dir) => dir switch
+{
+    0 => "right",
+    1 => "down",
+    2 => "left",
+    3 => "up",
+};
+
 (int x, int y, int direction) GetNewPosition(int x, int y, int direction)
 {
     var block = blocks.FirstOrDefault(b => x >= b.Value.x1 && x <= b.Value.x2 && y >= b.Value.y1 && y <= b.Value.y2);
@@ -118,7 +133,7 @@ Console.WriteLine($"1000 * {cur.y} + 4 * {cur.x} + {direction} = {1000 * cur.y +
         return block.Key switch
         {
             2 => (x: 100, y: 151-y, 2),
-            3 => (x: y, 50, 3),
+            3 => (x: y+50, y: 50, 3),
             5 => (x: 150, y: 151-y, 2),
             6 => (x: y-100, y: 150, 3)
         };
@@ -127,9 +142,9 @@ Console.WriteLine($"1000 * {cur.y} + 4 * {cur.x} + {direction} = {1000 * cur.y +
     {
         return block.Key switch
         {
-            2 => (x: 100, y: x, 2),
+            2 => (x: 100, y: x-50, 2),
             5 => (x: 50, y: x+100, 2),
-            6 => (x: 51 + x, y: 1, 1)
+            6 => (x: x+100, y: 1, 1)
         };
     }
     else if (direction == 2) // left
