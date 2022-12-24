@@ -18,7 +18,7 @@ for (int i = 0; i < lines.Length; i++)
 
 Print();
 
-for (int i = 0; i < 10; i++)
+for (int i = 0; i < 10000000; i++)
 {
     List<((int x, int y) olde, (int x, int y) newe)> moved = new();
     foreach (var elve in elves)
@@ -28,6 +28,12 @@ for (int i = 0; i < 10; i++)
     }
 
     var allowed = moved.GroupBy(t => t.newe).Where(t => t.Count() == 1).Select(t => t.First()).ToList();
+
+    if (allowed.Count == 0 || allowed.All(x => x.olde == x.newe))
+    {
+        Console.WriteLine(i + 1);
+        return;
+    }
 
     foreach (var al in allowed)
     {
@@ -55,6 +61,7 @@ for (int y = y1; y <= y2; y++)
 }
 
 Console.WriteLine(count);
+Console.WriteLine("end");
 
 (int x, int y) Move(int x, int y, int step)
 {
