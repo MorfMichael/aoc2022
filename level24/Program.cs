@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 string[] lines = File.ReadAllLines("level24.in");
@@ -6,7 +7,6 @@ string[] lines = File.ReadAllLines("level24.in");
 int width = lines[0].Length;
 int height = lines.Length;
 
-(int x, int y) end = (lines[0].Length - 2, lines.Length - 1);
 
 List<(int x, int y, int direction)> blizzards = new();
 HashSet<(int x, int y)> wall = new();
@@ -36,29 +36,56 @@ for (int y = 0; y < lines.Length; y++)
     }
 }
 
-HashSet<(int x, int y, int minute)> queue = new();
-queue.Add((1, 0, 0));
+(int x, int y) start = (1, 0);
+(int x, int y) end = (lines[0].Length - 2, lines.Length - 1);
 
-while (queue.Any())
+List<((int x, int y) start, (int x, int y) end)> ways = new()
 {
-    var cur = queue.OrderBy(t => t.minute).FirstOrDefault();
-    queue.Remove(cur);
+    (start, end),
+    (end, start),
+    (start, end)
+};
 
-    if (cur.x == end.x && cur.y == end.y)
-    {
-        Console.WriteLine(cur.minute);
-        return;
-    }
-
-    HashSet<(int x, int y)> blizzs = blizzards.Select(t => Blizzard(t.x, t.y, t.direction, cur.minute + 1)).ToHashSet();
-
-    var neighbours = PossibleNeighbours(cur.x, cur.y, blizzs);
-
-    foreach (var n in neighbours)
-    {
-        queue.Add((n.x, n.y, cur.minute + 1));
-    }
+int cur = 0;
+foreach (var way in ways)
+{
+    cur = Steps(way.start, way.end, cur);
 }
+
+Console.WriteLine(cur);
+
+int Steps((int x, int y) start, (int x, int y) end, int m)
+{
+    HashSet<(int x, int y, int minute)> queue = new();
+    queue.Add((start.x, start.y, m));
+
+    while (queue.Any())
+    {
+        var cur = queue.OrderBy(t => t.minute).FirstOrDefault();
+        queue.Remove(cur);
+
+        if (cur.x == end.x && cur.y == end.y)
+        {
+            Console.WriteLine(cur.minute);
+            return cur.minute;
+        }
+
+        HashSet<(int x, int y)> blizzs = blizzards.Select(t => Blizzard(t.x, t.y, t.direction, cur.minute + 1)).ToHashSet();
+
+        var neighbours = PossibleNeighbours(cur.x, cur.y, blizzs);
+
+        foreach (var n in neighbours)
+        {
+            queue.Add((n.x, n.y, cur.minute + 1));
+        }
+    }
+
+    Console.WriteLine("failed!");
+    return -1;
+}
+
+
+
 
 (int x, int y)[] PossibleNeighbours(int x, int y, HashSet<(int x, int y)> blizz)
 {
