@@ -1,4 +1,7 @@
-﻿string[] lines = File.ReadAllLines("level16.ex");
+﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography.X509Certificates;
+
+string[] lines = File.ReadAllLines("level16.ex");
 
 Dictionary<string, int> valves = new();
 Dictionary<string, string[]> next = new();
@@ -18,34 +21,69 @@ for (int i = 0; i < lines.Length; i++)
     next.Add(valve, n);
 }
 
-Dictionary<(string, HashSet<string>), int> calc = new();
+Console.WriteLine(Flow("AA", new string[0], 30));
 
-int Flow(string cur, HashSet<string> open, int left)
+//int vmax = valves.Max(x => x.Value);
+
+//int max = 0;
+
+//PriorityQueue<Game, int> queue = new(Comparer<int>.Create((a, b) => b - a));
+//queue.Enqueue(new Game("AA", new(), 30), 0);
+
+//while (queue.Count > 0)
+//{
+//    Game cur = default;
+//    int sum = 0;
+//    if (queue.TryPeek(out var game, out int s))
+//    {
+//        cur = queue.Dequeue();
+//        sum = s;
+//    }
+
+//    if (cur.left <= 0)
+//    {
+//        if (sum > max)
+//        {
+//            max = sum;
+//            Console.WriteLine(sum);
+//        }
+//        continue;
+//    }
+
+//    int flow = !cur.open.Contains(cur.valve) ? (cur.left - 1) * valves[cur.valve] : 0;
+//    HashSet<string> nopen = new HashSet<string>(cur.open);
+//    nopen.Add(cur.valve);
+//    foreach (var n in next[cur.valve])
+//    {
+//        if (flow > 0)
+//            queue.Enqueue(new Game(n, nopen, cur.left - 2), flow + sum);
+
+//        queue.Enqueue(new Game(n, cur.open, cur.left - 1), sum);
+//    }
+//}
+
+
+int Flow(string valve, string[] open, int left)
 {
-    //Console.WriteLine($"{cur} | {left} | {string.Join(",", open)}");
     if (left <= 0) return 0;
-
-    //if (calc.ContainsKey((cur,open))) return calc[(cur, open)];
 
     int max = 0;
 
-    if (!open.Contains(cur))
+    int flow = !open.Contains(valve) ? (left - 1) * valves[valve] : 0;
+    string[] nopen = new string[open.Length + 1];
+    for (int i = 0; i < open.Length; i++) nopen[i] = open[i];
+    nopen[^1] = valve;
+    foreach (var n in next[valve])
     {
-        var nopen = open.Append(cur).ToHashSet();
-        int flow = valves[cur] * (left - 1);
+        if (flow > 0)
+            max = Math.Max(max, flow + Flow(n, nopen, left - 2));
 
-        foreach (var n in next[cur])
-        {
-            if (flow > 0)
-                max = Math.Max(max, flow + Flow(n, nopen, left - 2));
-            else
-                max = Math.Max(max, Flow(n, open, left - 1));
-        }
+        max = Math.Max(max, Flow(n, open, left - 1));
     }
 
-
-    //if (!calc.ContainsKey((cur,open))) calc.Add((cur,open), max);
     return max;
 }
 
-Console.WriteLine(Flow("AA", new(), 30));
+
+
+record struct Game(string valve, HashSet<string> open, int left);
