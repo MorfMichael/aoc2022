@@ -1,7 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography.X509Certificates;
-
-string[] lines = File.ReadAllLines("level16.ex");
+﻿// (c) by yt hyper-neutrino
+string[] lines = File.ReadAllLines("level16.in");
 
 Dictionary<string, int> valves = new();
 Dictionary<string, string[]> next = new();
@@ -21,69 +19,69 @@ for (int i = 0; i < lines.Length; i++)
     next.Add(valve, n);
 }
 
-Console.WriteLine(Flow("AA", new string[0], 30));
+List<string> nonempty = new();
+Dictionary<string, Dictionary<string, int>> distances = new();
 
-//int vmax = valves.Max(x => x.Value);
-
-//int max = 0;
-
-//PriorityQueue<Game, int> queue = new(Comparer<int>.Create((a, b) => b - a));
-//queue.Enqueue(new Game("AA", new(), 30), 0);
-
-//while (queue.Count > 0)
-//{
-//    Game cur = default;
-//    int sum = 0;
-//    if (queue.TryPeek(out var game, out int s))
-//    {
-//        cur = queue.Dequeue();
-//        sum = s;
-//    }
-
-//    if (cur.left <= 0)
-//    {
-//        if (sum > max)
-//        {
-//            max = sum;
-//            Console.WriteLine(sum);
-//        }
-//        continue;
-//    }
-
-//    int flow = !cur.open.Contains(cur.valve) ? (cur.left - 1) * valves[cur.valve] : 0;
-//    HashSet<string> nopen = new HashSet<string>(cur.open);
-//    nopen.Add(cur.valve);
-//    foreach (var n in next[cur.valve])
-//    {
-//        if (flow > 0)
-//            queue.Enqueue(new Game(n, nopen, cur.left - 2), flow + sum);
-
-//        queue.Enqueue(new Game(n, cur.open, cur.left - 1), sum);
-//    }
-//}
-
-
-int Flow(string valve, string[] open, int left)
+foreach (var valve in valves)
 {
-    if (left <= 0) return 0;
+    if (valve.Key != "AA" && valve.Value == 0)
+        continue;
+
+    if (valve.Key != "AA")
+        nonempty.Add(valve.Key);
+
+    distances.Add(valve.Key, new() { { valve.Key, 0 } });
+
+    HashSet<string> visited = new() { valve.Key };
+
+    Queue<(int distance, string valve)> queue = new();
+    queue.Enqueue((0, valve.Key));
+
+    while (queue.Any())
+    {
+        (int distance, string pos) = queue.Dequeue();
+        foreach (var n in next[pos])
+        {
+            if (visited.Contains(n))
+                continue;
+
+            visited.Add(n);
+
+            if (valves[n] > 0)
+                distances[valve.Key].Add(n, distance + 1);
+            queue.Enqueue((distance + 1, n));
+        }
+    }
+
+    distances[valve.Key].Remove(valve.Key);
+}
+
+Dictionary<string, int> indices = nonempty.Select((t,i) => (t,i)).ToDictionary(x => x.t, x => x.i);
+Dictionary<(int time, string valve, int bitmask), int> cache = new();
+
+int Flow(int time, string valve, int bitmask)
+{
+    if (cache.ContainsKey((time, valve, bitmask)))
+        return cache[(time, valve, bitmask)];
 
     int max = 0;
 
-    int flow = !open.Contains(valve) ? (left - 1) * valves[valve] : 0;
-    string[] nopen = new string[open.Length + 1];
-    for (int i = 0; i < open.Length; i++) nopen[i] = open[i];
-    nopen[^1] = valve;
-    foreach (var n in next[valve])
+    foreach (var n in distances[valve])
     {
-        if (flow > 0)
-            max = Math.Max(max, flow + Flow(n, nopen, left - 2));
+        int bit = 1 << indices[n.Key];
 
-        max = Math.Max(max, Flow(n, open, left - 1));
+        if ((bitmask & bit) > 0)
+            continue;
+
+        int remtime = time - distances[valve][n.Key] - 1;
+        
+        if (remtime <= 0)
+            continue;
+
+        max = Math.Max(max, Flow(remtime, n.Key, bitmask | bit) + valves[n.Key] * remtime);
     }
 
     return max;
 }
 
-
-
-record struct Game(string valve, HashSet<string> open, int left);
+Console.WriteLine(Flow(30, "AA", 0));

@@ -8,12 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="level16.ex" />
     <None Remove="level16.in" />
+    <None Remove="sample.in" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="level16.ex">
+    <Content Include="sample.in">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="level16.in">
