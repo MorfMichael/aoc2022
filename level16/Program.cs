@@ -22,7 +22,7 @@ for (int i = 0; i < lines.Length; i++)
 List<string> nonempty = new();
 Dictionary<string, Dictionary<string, int>> distances = new();
 
-foreach (var valve in valves)
+foreach (var valve in valves) // distances
 {
     if (valve.Key != "AA" && valve.Value == 0)
         continue;
@@ -59,7 +59,7 @@ foreach (var valve in valves)
 Dictionary<string, int> indices = nonempty.Select((t,i) => (t,i)).ToDictionary(x => x.t, x => x.i);
 Dictionary<(int time, string valve, int bitmask), int> cache = new();
 
-int Flow(int time, string valve, int bitmask)
+int Flow(int time, string valve, int bitmask) // recursion
 {
     if (cache.ContainsKey((time, valve, bitmask)))
         return cache[(time, valve, bitmask)];
@@ -84,4 +84,12 @@ int Flow(int time, string valve, int bitmask)
     return max;
 }
 
-Console.WriteLine(Flow(30, "AA", 0));
+int b = (1 << nonempty.Count) - 1;
+int m = 0;
+
+for (int i = 0; i < b; i++)
+{
+    m = Math.Max(m, Flow(26, "AA", i) + Flow(26, "AA", b^i));
+}
+
+Console.WriteLine(m);
