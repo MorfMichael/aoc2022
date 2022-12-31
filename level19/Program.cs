@@ -1,12 +1,12 @@
 ﻿string[] lines = File.ReadAllLines("level19.in");
 
-int count = 0;
+int count = 1;
 
 string[] resources = new string[] { "ore", "clay", "obsidian", "geode" };
 
 Dictionary<int, int[][]> blueprints = new();
 
-for (int i = 0; i < lines.Length; i++)
+for (int i = 0; i < 3; i++)
 {
     string line = lines[i];
 
@@ -14,9 +14,9 @@ for (int i = 0; i < lines.Length; i++)
 
     var bp = GetCosts(line);
 
-    var v = Calculate(bp.bots, bp.maxspend, new(), 24, new int[] { 1, 0, 0, 0 }, new int[] { 0, 0, 0, 0 });
+    var v = Calculate(bp.bots, bp.maxspend, new(), 32, new int[] { 1, 0, 0, 0 }, new int[] { 0, 0, 0, 0 });
 
-    count += (i + 1) * v;
+    count *= v;
 }
 
 Console.WriteLine(count);
